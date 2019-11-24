@@ -1,4 +1,4 @@
-###一.组成部分
+一.组成部分
 
 1. NameNode: 存储文件的元数据,如文件名,文件目录结构,文件属性(生成时间,副本数,文件权限),
 以及每个文件的块列表和块所在的DataNode
@@ -18,14 +18,14 @@
 - 提高NameNode的重启速度
 - 必要的时候可作为新的NameNode
 
-###二.HDFS机制
+二.HDFS机制
 1. 心跳机制:心跳机制解决了HDFS集群间的通信问题，还是NameNode命令DataNode执行操作的途径
 
 - master namenode启动之后，会开一个ipc server
 - slave DataNode启动，连接NameNode，每隔3s向NameNode发送一个心跳，并携带状态信息
 - NameNode通过对这个心跳的返回值来给DataNode传达任务指令
 
-2. 心跳机制的作用:
+1.2. 心跳机制的作用:
 - NameNode全权管理数据块的复制，它周期性从集群中的每个DataNode接收心跳信号和块状态报告（blockReport），接收到心跳信号意味着该DataNode节点工作正常，块状态报告包含了该DataNode上所有数据块的列表
 - DataNode启动时向NameNode注册，通过后周期性地向NameNode上报blockReport，每3秒向NameNode发送一次心跳，NameNode返回对该DataNode的指令，如将数据块复制到另一台机器，或删除某个数据块等···而当某一个DataNode超过10min还没向NameNode发送心跳，此时NameNode就会判定该DataNode不可用，此时客户端的读写操作就不会再传达到该DataNode上
 - hadoop集群刚开始启动时会进入安全模式（99.99%），就用到了心跳机制，其实就是在集群刚启动的时候，每一个DataNode都会向NameNode发送blockReport，NameNode会统计它们上报的总block数，除以一开始知道的总个数total，当 block/total < 99.99% 时，会触发安全模式，安全模式下客户端就没法向HDFS写数据，只能进行读数据。
